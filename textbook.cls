@@ -100,6 +100,7 @@
     amsmath,
     amssymb,
     amsfonts,
+    cases,
     upgreek,
     ntheorem,
     xpatch,
@@ -121,6 +122,7 @@
     hyperref,
     cleveref,
   }
+\RequirePackage[figuresright]{rotating}
 \RequirePackage[ user, abspage, lastpage ]{ zref }
 \RequirePackage[perpage]{footmisc}
 % -----------------------------------------------------------------------------
@@ -219,31 +221,6 @@
 		  fontupper      = \small\ttfamily,
 		  listing~engine = listings,
 		  breakable
-	  },
-    osshell/.style = 
-    {
-      screen,
-      listing~only,
-		  every~listing~line = { \textcolor{green}{\bfseries \$ ~ > } },
-		  listing~options    =
-        { 
-          language={#1},
-          breaklines,
-          postbreak = \mbox{\textcolor{red}{$\hookrightarrow$}\space},
-          style=dark 
-        },
-	  },
-    codeexample/.style=
-    {
-		  breakable,
-		  sharp~corners,
-		  colback      = genbgl!20,
-		  colbacktitle = genfg,
-		  coltitle     = white,
-		  colframe     = genfg,
-		  top          = 0mm,
-      bottom       = 0mm,
-      boxsep       = 0mm
 	  },
     alertbox/.style = 
     {
@@ -643,6 +620,7 @@
 % 普通列表定义 已说明
 %-------------------------------------------------------------------------------
 \RequirePackage[shortlabels,inline]{enumitem}
+\SetEnumerateShortLabel{ C }{ \chinese* }
 \setlist{nosep,listparindent=2em}
 \newlist{question}{enumerate}{2}
 \setlist[question,1]{label=\arabic*.,ref=\arabic*}
@@ -667,6 +645,7 @@
 % 设置表格样式
 %-------------------------------------------------------------------------------
 \UseTblrLibrary{siunitx}
+\UseTblrLibrary{diagbox}
 \SetTblrInner{
   hlines        = { genfg },
   vlines        = { genfg },
@@ -1282,9 +1261,18 @@
       }
     \begin{ tcolorbox }[ practice, fontupper=\small ]\parindent2em }
   { \end{ tcolorbox } }
-
-\DeclareDocumentEnvironment { Exercise } { O{ 习题 } }
-  { \begin{ tcolorbox }[ exercise, title={\faEdit \nobreakspace #1}, fontupper=\small ]\parindent2em }
+\newcounter{exercise}
+\renewcommand{\theexercise}{\chinese{exercise}}
+\DeclareDocumentEnvironment { Exercise } { s O{ 习题 } }
+  { 
+    \IfBooleanTF#1
+      { \tcbset { title=\faEdit \nobreakspace #2 } }
+      { 
+        \refstepcounter {exercise}
+        \tcbset { title=\faEdit \nobreakspace #2 \chinese{exercise}} 
+      }
+    \begin{ tcolorbox }[ exercise, fontupper=\small ]\parindent2em 
+  }
   { \end{ tcolorbox } }
 
 %% --- 信息、警告、贴士、错误 信息框
@@ -1298,17 +1286,6 @@
   { alertbox = red } { \centering\faTimesCircle \tcblower #1 }
 \DeclareTotalTColorBox{\alertupdate} { +m } 
   { alertbox = cyan } { \centering\faArrowCircleUp \tcblower #1 }
-%% --- 系统变量盒子
-\DeclareTotalTCBox{ \osvar }{ m }
-  { smallbox  = olive, fontupper = \sffamily }
-  { #1 }
-\DeclareTotalTCBox{ \oscommand }{ m }
-  { smallboxdark  = olive  }
-  { #1 }
-%% --- shell 命令行格式
-% \newtcblisting{oscmd}{osshell=\$}
-\DeclareTCBListing{ oscmd }{ O{command.com} }
-{  osshell=#1 }
 %% --- 字符串样式
 \NewDocumentCommand\Str { m } { \texttt{#1} }
 %% --- 文件名及扩展名的格式

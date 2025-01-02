@@ -8,8 +8,9 @@
 
 主要使用的宏包罗列如下，由这些宏包或者 LaTeX3 内核自动引入的包不再罗列其中：
 + `ctex` — 中文支持宏包
-+ `xtemplate` — 实际上没有应用，我还不太会用这个包，但是将其引入了
-+ `amsmath`、`amssymb`、`amsfonts` — `ams` 系列数学类宏包，注意没有 `amsthm`，需要时请自行加载
++ `xeCJKfntef`
++ `amsmath`、`amssymb`、`amsfonts` — `ams` 系列数学类宏包
++ `upgreek` — 直立希腊字母宏包
 + `geometry` — 页面尺寸设置
 + `fancyhdr` — 页眉页脚设计
 + `hyperref`、`cleveref` — 交叉引用的设置
@@ -23,6 +24,7 @@
 + `xpatch` — 用于局部修改部分宏命令定义
 + `listings` — 用于编程语言排版风格设定
 + `varwidth` — 用于生成不超过指定宽度的文本块
++ `tasks`
 + 带特定选项加载的宏包：
   - `enumitem` — 带 `[shortlabels,inline]` 选项，兼容短标签，支持行内直接排印列表
   - `footmisc` — 带 `[perpage]` 选项，脚注样式设定按页编号
@@ -57,7 +59,7 @@
 
 + `[oneside]`、`[twoside]` — 继承的标准文档类选项
 + `[colortheme]` — `<key>=<value>` 选项，`<value>` 支持 `ninecolors` 宏包提供的基本色彩名，包括 `red`、`brown`、`yellow`、`olive`、`green`、`teal`、`cyan`、`azure`、`blue`、`violet`、`magenta` 和 `purple`，为文档色彩指定基调。
-+ `[config]` — `<key>=<value>` 选项，指定额外需要读入的使用 LaTeX 3 语法的配置文件的文件名。`<value>` 可带路径，必须带扩展名（如果文件有扩展名）。
++ `[txconfig]` — `<key>=<value>` 选项，指定额外需要读入的使用 LaTeX 3 语法的配置文件的文件名。`<value>` 可带路径，必须带扩展名（如果文件有扩展名）。
 + 文档类不继承其他标准文档类的选项，如需对已加载的宏包和 `ctexbook` 类使用选项，请在 `\documentclass` 命令前使用 `\PassOptionsToClass` 或 `\PassOptionsToPackage` 命令。
 
 ### 书籍元数据设置
@@ -97,15 +99,12 @@
    + `cvsecd` — 封面深色条文色彩，采用 `<color>1`；
    + `cvpat`  — 封面透明条纹色彩（封面显示了透明效果），采用 `<color>5`；
 + `tabularray` 设定了基本表格样式，为 `tblr` 环境的默认设置：
-   - 一般表格线采用白色，水平顶底表格线采用 `genfg` 色，线宽 1.5pt，竖向左右边框线采用 0pt 线宽；
-   - 各行垂直居中对齐；
-   - 奇数行采用 `gengbgl!20` 色彩，偶数行采用 `genbgl` 色彩；
-   - 表头因行数不确定，建议用户自行设定，如 `row {1,2} = {fg=white,bg=genfg,font=\bfseries}` 进行自行设置以突出表头。
+   - 表格线采用 `genfg` 色，外框线宽 1.5pt，其余线宽为默认；
+   - 各行垂直居中对齐。
 + `tabularray` 设定两种长表格风格主题：
    - `plain` — 不设标题，适用于不进行表格编号的长表格
    - `normal` — 自动设置标题。
    - 长表格表内样式需要自行设定
-+ 编程语言使用 `listings` 宏包进行语法高亮，语法高亮主题有 `dark` 和 `light` 两种风格，对 `lstlisting` 环境可以使用 `[style=<light/dark>]` 进行设置。  
 + `tcolorbox` 相关盒子样式设定，以下关键字可直接作为 `tcolorbox` 环境的选项使用
   - `Win10` —— Windows 10 窗口风格的文本框；
   - `Apple` —— 苹果 macOS 窗口风格的文本框；
@@ -114,7 +113,7 @@
 
 ### 一些默认设置
 
-+ 正文使用 5 号字。
++ 正文使用小 4 号字。
 + 脚注采用中文带圈数字格式。
 + 浮动体图表默认采用 `\small` 字号，环境内居中布置。
 + 浮动体默认规则改为 `htbp`，支持就地排印。
@@ -127,14 +126,6 @@
 ### 一些用户命令和环境
 
 + 环境
-  - `timeline` 环境，语法格式：
-  ```latex
-  \begin{timeline}
-    \item[<时间>] xxx
-    \item[<时间>] xxx
-  \end{timeline}
-  ``` 
-  环境不带参数的列表环境，列表项可选参数通常为时间，环境会用一条线将列表项标签点穿起来，起到时间线的效果。本环境能够跨页排印。
   - `EqDesc` 环境，公式解释环境，语法格式：
   ```latex
   \begin{EqDesc}[式中：]{Eq_n}
@@ -143,22 +134,7 @@
   \end{EqDesc}
   ``` 
   环境第一个参数默认为 `式中：`，排印时出现在列表最前，第二个参数内容并无意义，只是用来设定标签长度，标签采用第一个参数和放在数学模式中的第二个参数排印后的总宽度作为标签宽度，从而可以使列表项公式对齐。列表项可选参数及环境的必选参数都可以使用数学模式下的命令。
-  - `argdesc` 环境，语法格式
-  ```latex
-  \begin{argdesc}[9em]
-    \item[\marg{xxx}] xxx
-    \item[\oarg{xxx}] xxx
-  \end{argdesc}
-  ```
-  环境用于排印计算机函数语句的参数解释，本环境实际是 `description` 环境的一个包装，第一个参数是一个长度参数默认为 `9em`，表示解释内容的水平对齐位置（左边距）。列表项的参数可以使用自行定义的必选参数命令和可选参数命令，可依具体语言特点仿照 `ltxdoc` 自行设计。
-  - `oscmd` 环境，语法格式
-  ```latex
-  \begin{oscmd}[bash]
-  sudo rm -rf /
-  \end{oscmd}
-  ```
-  本环境中的内容将抄录排印，用于表达计算机操作系统终端的命令执行。环境的参数用于指定进行语法高亮的计算机语言，如 `command.com`、`bash`、`csh` 等等，默认为 `command.com`，支持的语言为 `listings` 宏包中支持的语言和自定义语言。
-
+  
 + 命令
    - `\alertwarning`、 `\alertinfo`、`\alerterror`、`\alerttip` 、`\alertupdate` 均为带一个长参数（可分段）的命令。生成信息、警告、错误、贴士和更新的信息框。这一系列命令可能与 `alertmessage` 宏包命令冲突，如果需要该宏包的命令，请在配置文件中加载 `alertmessage`。
    - `\osvar` 以一个橄榄色的小盒子排印，通常用于系统变量； 
@@ -176,7 +152,7 @@
 ## 文档示例
 
 ```latex
-\documentclass[colortheme=olive]{transbook}
+\documentclass[colortheme=olive]{textbook}
 \Booksetup{
   BookTitle   = 这是书名,
   BookTitle*  = This Is the Book Title,
@@ -188,7 +164,6 @@
     },
   % Logo          = graphics/logo.pdf,
   CoverGraph    = graphics/cvgraph.png,
-  % ISBN          = 978-7-302-11622-6,
   % AuthorList*   = {Mike Jordan, Mike Johnson },
   AuthorList*   = {{Jordan, Mike}, {Johnson, Mike} }, % 如果人名有逗号，用这种方式
   AuthorList    = {张小泉,李四,王麻子}, 
